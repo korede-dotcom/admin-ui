@@ -465,7 +465,7 @@ const downloadEventsAsPDF = (events) => {
     pdf.setFontSize(10);
     pdf.setTextColor(34, 139, 34); // Green text
     pdf.text(
-      "NOTE: kinly bring this on the day of event for checking so we can serve you better",
+      "NOTE: kindly bring this on the day of event for checking so we can serve you better",
       105,
       38,
       { align: "center" }
