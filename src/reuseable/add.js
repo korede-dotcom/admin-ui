@@ -3,11 +3,11 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
-// import TextField from '@mui/material/TextField';
+import TextField from '@mui/material/TextField';
 import CloseIcon from '@mui/icons-material/Close';
-// import SettingsIcon from '@mui/icons-material/Add';
-// import Select from '@mui/material/Select';
-// import MenuItem from '@mui/material/MenuItem';
+import SettingsIcon from '@mui/icons-material/Add';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 function Add({contentText,children,isLarge,btntext,onSubmit,sty,formdata,Close}) {
   const [open, setOpen] = useState(false);

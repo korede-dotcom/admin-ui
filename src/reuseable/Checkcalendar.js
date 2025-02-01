@@ -165,23 +165,63 @@ const handleStaffChange = (event) => {
   const handleNewEventSubmit = (e) => {
     e.preventDefault()
     console.log(e)
+    if (!navigator.onLine) {
+      alert("No internet connection. Please check your network.");
+    }
     mutate(getEvent)
   };
+
+  // const { mutate, isLoading, isError } = useMutation({
+  //   mutationFn: EventBook,
+  //   onSuccess: (data) => {
+  //     if (data?.status) {
+  //       refetch()
+  //       setModalOpen(false);
+  //   setSelectedDate(null);
+  //   setEventDetails(null);
+  //   setNewEventTitle("");
+  //       // seteventpkg((prevPkg) => [...prevPkg, data?.data?.pkg]);
+  //     }
+  //     // return  setclose(!getclose)
+  //   },
+  //   onError: (err) => {
+  //     alert("Error while booking event:", err);
+  //   },
+
+  // });
 
   const { mutate, isLoading, isError } = useMutation({
     mutationFn: EventBook,
     onSuccess: (data) => {
       if (data?.status) {
-        refetch()
+        refetch();
         setModalOpen(false);
-    setSelectedDate(null);
-    setEventDetails(null);
-    setNewEventTitle("");
-        // seteventpkg((prevPkg) => [...prevPkg, data?.data?.pkg]);
+        setSelectedDate(null);
+        setEventDetails(null);
+        setNewEventTitle("");
       }
-      // return  setclose(!getclose)
+    },
+    onError: (err) => {
+      let errorMessage = "An unknown error occurred. Please try again.";
+  
+      if (!navigator.onLine) {
+        errorMessage = "No internet connection. Please check your network.";
+      } else if (err?.response?.data?.errors?.length) {
+        // Handle validation errors from API
+        errorMessage = err.response.data.errors
+          .map((e) => `${e.param}: ${e.msg}`)
+          .join("\n");
+      } else if (err?.response?.data?.message) {
+        errorMessage = err.response.data.message; // API error message
+      } else if (err?.message) {
+        errorMessage = err.message; // General error (e.g., network issue)
+      }
+  
+      alert(errorMessage);
     },
   });
+  
+  
 
   const isDateBooked = (date) => {
     // In this example, we assume that a date is booked if it already has an event associated with it
@@ -630,6 +670,10 @@ const downloadEventsAsPDF = (events) => {
             ...allbooking.map(d => {
               return {
                 title:d?.event_type,start:d?.date,
+                backgroundColor: d?.part_payments ? "#000" : "", // Yellow for part payments
+                // borderColor: d?.part_payments ? "black" : "", // Optional border color
+                textColor: d?.part_payments ? "white" : "", // Ensure readability
+          
                 extendedProps:{
                   booking: {
                     name: `${d?.first_name} ${d?.last_name}`,

@@ -75,6 +75,15 @@ export const AllExpensis = async () => {
   return data;
 };
 
+export const UpdateExpensis = async ({id,body}) => {
+
+  const { data } = await Axios.post(
+    `${baseurl}expensis/update/${id}`,
+    body
+  );
+  console.log(body)
+  return data;
+};
 export const CreateService = async (body) => {
 
   const { data } = await Axios.post(
@@ -157,10 +166,32 @@ export const EventBook = async (body) => {
   console.log(body)
   return data;
 };
+export const EventBookPart = async (body) => {
+  const { data } = await Axios.post(
+    `${baseurl}eventmanager/book/part-payment`,
+    body
+  );
+  console.log(body)
+  return data;
+};
+export const EventBookPartUpdate = async (body) => {
+  const { data } = await Axios.put(
+    `${baseurl}eventmanager/book/part-payment`,
+    body
+  );
+  console.log(body)
+  return data;
+};
 
 export const AllEventBook = async () => {
     const { data } = await Axios.get(
         `${baseurl}eventmanager/book`,
+      );
+      return data;
+};
+export const AllEventBookPart = async () => {
+    const { data } = await Axios.get(
+        `${baseurl}eventmanager/book/part-payment`,
       );
       return data;
 };

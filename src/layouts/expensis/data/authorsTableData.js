@@ -26,7 +26,7 @@ import { useState } from "react";
 import team2 from "assets/images/team-2.jpg";
 import team3 from "assets/images/team-3.jpg";
 import team4 from "assets/images/team-4.jpg";
-import { CreateBranch,getAllBranch,CreateAnyUser,getAllUsers,ApproveAnyUser,AllExpensis } from "services/Dashboard";
+import { CreateBranch,getAllBranch,CreateAnyUser,getAllUsers,ApproveAnyUser,AllExpensis,UpdateExpensis } from "services/Dashboard";
 import { useMutation } from "@tanstack/react-query"; 
 import { useQuery } from '@tanstack/react-query';
 import Avatar from '@mui/material/Avatar';
@@ -48,11 +48,30 @@ const toggleState = () => {
 };
 
 const caset = (id) => {
+  console.log("🚀 ~ caset ~ id:", id)
   localStorage.setItem("staffId",JSON.stringify(id))
   toggleState()
 
   console.log("🚀 ~ isOpen:", booleanState)
 }
+
+const { mutate, isLoading,isError} = useMutation({
+  mutationFn: UpdateExpensis,
+  onSuccess: (data) => {
+    console.log("🚀 ~ file: index.js:127 ~ data:", data)
+    window.location.href = '/expensis'
+    setclosemodal(true)
+    
+  },
+  onError: (err) => {
+    console.log("🚀 ~ file: index.js:145 ~ err:", err?.response?.data.errors[0].msg)
+    seterrrmsg(err?.response?.data.errors[0].msg)
+    setTimeout(()=> {
+      seterrrmsg("")
+    },2000)
+    
+  }  
+});
 
 
   function stringToColor(string) {
@@ -178,7 +197,7 @@ function toggleEventStatus(eventId, currentStatus) {
       { Header: "title", accessor: "title", align: "left" },
       { Header: "status", accessor: "status", align: "center" },
       { Header: "createdAt", accessor: "createdAt", align: "center" },
-      // { Header: "action", accessor: "action", align: "center" },
+      { Header: "action", accessor: "action", align: "center" },
     ],
 
     rows: [...getexpensis?.map(d => {
@@ -212,12 +231,12 @@ function toggleEventStatus(eventId, currentStatus) {
               {new Date(d?.createdAt).toLocaleString('en-US')}
             </MDTypography>
           ),
-          // action: (
-          //   <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          action: (
+            <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
              
-          //    <p onClick={(id) => caset(d)}>Edit</p>
-          //   </MDTypography>
-          // ),
+             <p onClick={(id) => caset(d)}>Edit</p>
+            </MDTypography>
+          ),
         }
       )
 

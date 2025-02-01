@@ -52,6 +52,7 @@ import Todo from "layouts/todo";
 import Branch from "layouts/branch";
 import Staffs from "layouts/staffs";
 import Rooms from "layouts/rooms";
+import PartPayment from "layouts/partpayment";
 import RoomCategories from "layouts/roomcategories";
 // import Gym from "layouts/gym";
 // import Hotel from "layouts/hotel";
@@ -152,6 +153,14 @@ const routes = [
     icon: <CalendarMonthIcon/>,
     route: "/calendar",
     component: <Calendar />,
+  },
+  {
+    type: "collapse",
+    name: "partpayment",
+    key: "partpayment",
+    icon: <CalendarMonthIcon/>,
+    route: "/partpayment",
+    component: <PartPayment />,
   },
   {
     type: "collapse",

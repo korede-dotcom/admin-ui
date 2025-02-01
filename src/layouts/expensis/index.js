@@ -41,7 +41,7 @@ import TextField from '@mui/material/TextField';
 import CloseIcon from '@mui/icons-material/Close';
 import SettingsIcon from '@mui/icons-material/Add';
 
-import { CreateBranch,getAllBranch,CreateExpensis,getAllUsers,UpdateAnyUser,AllExpensis } from "services/Dashboard";
+import { CreateBranch,getAllBranch,CreateExpensis,getAllUsers,UpdateAnyUser,AllExpensis,UpdateExpensis } from "services/Dashboard";
 import { useMutation } from "@tanstack/react-query"; 
 import { useQuery } from '@tanstack/react-query';
 import MenuItem from '@mui/material/MenuItem';
@@ -96,9 +96,9 @@ function Tables () {
   console.log("🚀 ~ select:", select)
   const [select2, setselect2] = useState({
     name:"",
-    address:"",
-    phonenumber:"",
-    email:"",
+    amount:"",
+    // phonenumber:"",
+    // email:"",
     // branch_id:"",
     // role_id:"",
     // state:"",
@@ -155,10 +155,13 @@ function Tables () {
  }
 
  const CreateAnyUserBtn = (event) => {
+  if (!navigator.onLine) {
+    alert("No internet connection. Please check your network.");
+  }
   mutate(select)
 };
  const UpadaterAnyUserBtn = (event) => {
-  updatedUser({body:{...select2},id:staffDetails?.user?._id})
+  updatedUser({id:staffDetails?._id,body:select2})
 };
 
   const { mutate, isLoading,isError} = useMutation({
@@ -169,20 +172,38 @@ function Tables () {
       setclosemodal(true)
       
     },
-    onError: (err) => {
-      console.log("🚀 ~ file: index.js:145 ~ err:", err?.response?.data.errors[0].msg)
-      seterrrmsg(err?.response?.data.errors[0].msg)
-      setTimeout(()=> {
-        seterrrmsg("")
-      },2000)
+    // onError: (err) => {
+    //   console.log("🚀 ~ file: index.js:145 ~ err:", err?.response?.data.errors[0].msg)
+    //   seterrrmsg(err?.response?.data.errors[0].msg)
+    //   setTimeout(()=> {
+    //     seterrrmsg("")
+    //   },2000)
       
-    }  
+    // }  
+    onError: (err) => {
+      let errorMessage = "An unknown error occurred. Please try again.";
+  
+      if (!navigator.onLine) {
+        errorMessage = "No internet connection. Please check your network.";
+      } else if (err?.response?.data?.errors?.length) {
+        // Handle validation errors from API
+        errorMessage = err.response.data.errors
+          .map((e) => `${e.param}: ${e.msg}`)
+          .join("\n");
+      } else if (err?.response?.data?.message) {
+        errorMessage = err.response.data.message; // API error message
+      } else if (err?.message) {
+        errorMessage = err.message; // General error (e.g., network issue)
+      }
+  
+      alert(errorMessage);
+    },
 });
   const { mutate:updatedUser} = useMutation({
-    mutationFn: UpdateAnyUser,
+    mutationFn: UpdateExpensis,
     onSuccess: (data) => {
       console.log("🚀 ~ file: index.js:127 ~ data:", data)
-      window.location.href = '/staffs'
+      window.location.href = '/expensis'
       setclosemodal(true)
       
     },
@@ -227,6 +248,7 @@ const {getAllUser} = useQuery({
   return (
     <DashboardLayout>
       <DashboardNavbar />
+      
       <MDBox pt={6} pb={3}>
         <Add isLarge={true} btntext="Add Expensis" Close={closemodal} >
        
@@ -276,9 +298,9 @@ const {getAllUser} = useQuery({
                   <>
                   <p style={{color:"red"}}>{errrmsg}</p>
            <TextField fullWidth defaultValue={staffDetails?.user?.name}  label="Name" name="name" sx={{py:1}} color="primary" onChange={handleStaffEditChange} />
-            <TextField fullWidth defaultValue={staffDetails?.phonenumber} label="phonenumber" name="phonenumber" sx={{py:1}}color="primary" onChange={handleStaffEditChange}  />
-            <TextField fullWidth defaultValue={staffDetails?.address} label="address" name="address" sx={{py:2}} color="primary" onChange={handleStaffEditChange} />
-            <TextField fullWidth defaultValue={staffDetails?.user?.email} label="email" name="email" sx={{py:2}} type="email" color="primary" onChange={handleStaffEditChange} />
+            <TextField fullWidth defaultValue={staffDetails?.phonenumber} label="Amount" name="amount" sx={{py:1}}color="primary" onChange={handleStaffEditChange}  />
+            {/* <TextField fullWidth defaultValue={staffDetails?.address} label="address" name="address" sx={{py:2}} color="primary" onChange={handleStaffEditChange} />
+            <TextField fullWidth defaultValue={staffDetails?.user?.email} label="email" name="email" sx={{py:2}} type="email" color="primary" onChange={handleStaffEditChange} /> */}
             {/* <TextField fullWidth label="state" name="state" sx={{py:2}} type="text" color="primary" onChange={handleOnChange} /> */}
             {/* <small sx={{fontSize:'14px'}}>Manager type</small> */}
             {/* <Select defaultValue={staffDetails?.user?.role_id} sx={{width:'100%',py:1,mb:3}}

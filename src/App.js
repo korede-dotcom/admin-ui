@@ -68,6 +68,7 @@ import Profile from "layouts/profile";
 import Edit from "layouts/edit";
 import Gallery from "layouts/gallery";
 import Calendar from "layouts/calendar";
+import PartPayment from "layouts/partpayment";
 // import Calendar from "./reuseable/Hotelcalendar";
 import Dyna from "./reuseable/Dyna"
 
@@ -255,6 +256,7 @@ export default function App() {
              <Route path="/profile" element={<Profile/>} />
              <Route path="/gallery" element={<Gallery/>} />
              <Route path="/calendar" element={<Calendar/>} />
+             <Route path="/partpayment" element={<PartPayment/>} />
              <Route path="/expensis" element={<Expensis/>} />
              <Route path="/todo" element={<Todo/>} />
              <Route path="/branch" element={<Branch/>} />

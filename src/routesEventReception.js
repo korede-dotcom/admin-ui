@@ -49,6 +49,7 @@ import Gallery from "layouts/gallery";
 import Calendar from "layouts/calendar";
 import Staffs from "layouts/staffs";
 import Expenses from "layouts/expensis";
+import PartPayment from "layouts/partpayment";
 // import Calendar from "layouts/Calender";
 // import Gym from "layouts/gym";
 // import Hotel from "layouts/hotel";
@@ -86,6 +87,13 @@ const routesEventReception = [
     icon: <CalendarMonthIcon/>,
     route: "/calendar",
     component: <Calendar />,
+  },{
+    type: "collapse",
+    name: "partpayment",
+    key: "partpayment",
+    icon: <CalendarMonthIcon/>,
+    route: "/partpayment",
+    component: <PartPayment />,
   },{
     type: "collapse",
     name: "expensis",

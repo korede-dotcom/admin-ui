@@ -51,6 +51,7 @@ import Calendar from "layouts/hotelcalendar";
 // import Gym from "layouts/gym";
 // import Hotel from "layouts/hotel";
 import Rooms from "layouts/rooms";
+import RoomCategories from "layouts/roomcategories";
 // @mui icons
 import Icon from "@mui/material/Icon";
 
@@ -76,6 +77,14 @@ const hotelroutes = [
     icon: <CalendarMonthIcon/>,
     route: "/calendar",
     component: <Calendar />,
+  },
+  {
+    type: "collapse",
+    name: "roomcategories",
+    key: "roomcategories",
+    icon: <MRoom/>,
+    route: "/roomcategories",
+    component: <RoomCategories />,
   },
   {
     type: "collapse",
