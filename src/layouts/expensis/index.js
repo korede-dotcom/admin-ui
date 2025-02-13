@@ -203,7 +203,7 @@ function Tables () {
     mutationFn: UpdateExpensis,
     onSuccess: (data) => {
       console.log("🚀 ~ file: index.js:127 ~ data:", data)
-      window.location.href = '/expensis'
+      window.location.href = '/expenses'
       setclosemodal(true)
       
     },

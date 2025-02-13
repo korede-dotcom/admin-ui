@@ -96,10 +96,10 @@ const routesEventReception = [
     component: <PartPayment />,
   },{
     type: "collapse",
-    name: "expensis",
-    key: "expensis",
+    name: "expenses",
+    key: "expenses",
     icon: <CalendarMonthIcon/>,
-    route: "/expensis",
+    route: "/expenses",
     component: <Expenses />,
   },
   {

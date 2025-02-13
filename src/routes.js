@@ -164,8 +164,8 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "expensis",
-    key: "expensis",
+    name: "expenses",
+    key: "expenses",
     icon: <CalendarMonthIcon/>,
     route: "/expenses",
     component: <Expensis />,
