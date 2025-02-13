@@ -255,7 +255,7 @@ export default function App() {
              <Route path="/profile" element={<Profile/>} />
              <Route path="/gallery" element={<Gallery/>} />
              <Route path="/calendar" element={<Calendar/>} />
-             <Route path="/expensis" element={<Expensis/>} />
+             <Route path="/expenses" element={<Expensis/>} />
              <Route path="/todo" element={<Todo/>} />
              <Route path="/branch" element={<Branch/>} />
              <Route path="/edit" element={<Edit/>} />

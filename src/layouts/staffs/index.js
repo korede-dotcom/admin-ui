@@ -61,6 +61,8 @@ function Tables() {
     <MenuItem value={3}>gymmanager</MenuItem>,
     <MenuItem value={4}>shortletmanager</MenuItem>,
     <MenuItem value={5}>secretary</MenuItem>,
+    <MenuItem value={10}>security</MenuItem>,
+    <MenuItem value={11}>cleaner</MenuItem>,
     <MenuItem value={7}>hotel receptionist</MenuItem>,
     <MenuItem value={8}>gym receptionist</MenuItem>,
     <MenuItem value={9}>event receptionist</MenuItem>,
@@ -74,9 +76,12 @@ function Tables() {
     <MenuItem value={7}>shortlet receptionist</MenuItem>,
     <MenuItem value={8}>gym receptionist</MenuItem>,
     <MenuItem value={9}>event receptionist</MenuItem>,
-    <MenuItem value={6}>Other staffs</MenuItem>
+    <MenuItem value={6}>Other staffs</MenuItem>,
+    <MenuItem value={10}>security</MenuItem>,
+    <MenuItem value={11}>cleaner</MenuItem>,
   ]);
   const [staff, setStaff] = useState('');
+  const [staff2, setStaff2] = useState('');
   const [errrmsg, seterrrmsg] = useState('');
   const [branch,setBranch] = useState([])
   const [staffbranch,setStaffBranch] = useState('')
@@ -95,18 +100,18 @@ function Tables() {
     branch_id:"",
     role_id:"",
     state:"",
+    salary:"",
     
    })
-  const [select2, setselect2] = useState({
-    name:"",
-    address:"",
-    phonenumber:"",
-    email:"",
-    // branch_id:"",
-    // role_id:"",
-    // state:"",
-    
-   })
+   const [select2, setselect2] = useState({
+    name: staffDetails?.user?.name || '',
+    address: staffDetails?.address || '',
+    phonenumber: staffDetails?.phonenumber || '',
+    email: staffDetails?.user?.email || '',
+    salary: staffDetails?.salary || '',
+    role_id: staffDetails?.user?.role_id || '',
+  
+  });
   const handleChange = (event) => {
     const { value, name } = event.target
     setStaff(value);
@@ -115,6 +120,18 @@ function Tables() {
       return {
         ...prev,
         [name]:parseInt(value)
+      }
+    })
+  };
+  const handleChange2 = (event) => {
+    const { value, name } = event.target
+    console.log("===== valu",value)
+    setStaff(value);
+
+    setselect2(prev => {
+      return {
+        ...prev,
+        role_id:parseInt(value)
       }
     })
   };
@@ -159,8 +176,12 @@ function Tables() {
  const CreateAnyUserBtn = (event) => {
   mutate(select)
 };
- const UpadaterAnyUserBtn = (event) => {
-  updatedUser({body:{...select2},id:staffDetails?.user?._id})
+//  const UpadaterAnyUserBtn = (event) => {
+//   updatedUser({body:{...select2},id:staffDetails?.user?._id})
+// };
+
+const UpadaterAnyUserBtn = () => {
+  updatedUser({ body: { ...select2 }, id: staffDetails?.user?._id });
 };
 
   const { mutate, isLoading,isError} = useMutation({
@@ -180,7 +201,7 @@ function Tables() {
       
     }  
 });
-  const { mutate:updatedUser} = useMutation({
+  const { mutate:updatedUser,isLoading:loadd,} = useMutation({
     mutationFn: UpdateAnyUser,
     onSuccess: (data) => {
       console.log("🚀 ~ file: index.js:127 ~ data:", data)
@@ -235,6 +256,7 @@ const {getAllUser} = useQuery({
             <TextField fullWidth label="phonenumber" name="phonenumber" sx={{py:1}}color="primary" onChange={handleOnChange}  />
             <TextField fullWidth label="address" name="address" sx={{py:2}} color="primary" onChange={handleOnChange} />
             <TextField fullWidth label="email" name="email" sx={{py:2}} type="email" color="primary" onChange={handleOnChange} />
+            <TextField fullWidth label="salary" name="salary" sx={{py:2}} type="text" color="primary" onChange={handleOnChange} />
             <TextField fullWidth label="state" name="state" sx={{py:2}} type="text" color="primary" onChange={handleOnChange} />
             <small sx={{fontSize:'14px'}}>Manager type</small>
             <Select sx={{width:'100%',py:1,mb:3}}
@@ -293,7 +315,8 @@ const {getAllUser} = useQuery({
                 onClick={CreateAnyUserBtn}
                 sx={{ mt: 2, px: 2, color: '#fff' }}
                 >
-            Submit
+            {/* Submit */}
+            {isLoading ? "loading..." : "Submit"}
             </Button>
         </Add>
         {/* <Add  btntext="add image to branch" /> */}
@@ -307,14 +330,15 @@ const {getAllUser} = useQuery({
             <TextField fullWidth defaultValue={staffDetails?.phonenumber} label="phonenumber" name="phonenumber" sx={{py:1}}color="primary" onChange={handleStaffEditChange}  />
             <TextField fullWidth defaultValue={staffDetails?.address} label="address" name="address" sx={{py:2}} color="primary" onChange={handleStaffEditChange} />
             <TextField fullWidth defaultValue={staffDetails?.user?.email} label="email" name="email" sx={{py:2}} type="email" color="primary" onChange={handleStaffEditChange} />
+            <TextField fullWidth defaultValue={staffDetails?.salary} label="salary" name="salary" sx={{py:2}} type="text" color="primary" onChange={handleStaffEditChange} />
             {/* <TextField fullWidth label="state" name="state" sx={{py:2}} type="text" color="primary" onChange={handleOnChange} /> */}
-            {/* <small sx={{fontSize:'14px'}}>Manager type</small> */}
-            {/* <Select defaultValue={staffDetails?.user?.role_id} sx={{width:'100%',py:1,mb:3}}
+            <small sx={{fontSize:'14px'}}>Manager type</small>
+            <Select defaultValue={staffDetails?.user?.role_id} sx={{width:'100%',py:1,mb:3}}
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 value={staff}
                 label="Staff"
-                onChange={handleChange}
+                onChange={handleChange2}
                 placeholder="Staff type"
                 name="role_id"
               >
@@ -353,14 +377,15 @@ const {getAllUser} = useQuery({
               </Select>
             </>
               )
-            } */}
+            }
         <Button
                 variant="contained"
                 fullWidth
                 onClick={UpadaterAnyUserBtn}
                 sx={{ mt: 2, px: 2, color: '#fff' }}
                 >
-            Submit
+            {/* Submit */}
+            {loadd ? "loading..." : "Submit"}
             </Button>
     
                   </>

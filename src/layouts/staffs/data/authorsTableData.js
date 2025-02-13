@@ -164,6 +164,7 @@ function toggleEventStatus(eventId, currentStatus) {
     columns: [
       { Header: "name", accessor: "name", align: "left" },
       { Header: "role", accessor: "role", align: "left" },
+      { Header: "salary", accessor: "salary", align: "left" },
       { Header: "status", accessor: "status", align: "center" },
       { Header: "employed On", accessor: "employed", align: "center" },
       { Header: "action", accessor: "action", align: "center" },
@@ -174,6 +175,7 @@ function toggleEventStatus(eventId, currentStatus) {
         {
           name: <Author image={d?.image} name={d?.user?.name} email={d?.user?.email} />,
           role: <Job title={d?.user?.roleName.toUpperCase()} description={d?.branch?.name || "works with CEO"} />,
+          salary: <Job title={`#${d?.salary}`}  />,
           status: (
             <MDBox ml={-1}>
               <MDBadge badgeContent={d?.user?.status} color={d?.user?.status ? "success": "warning"} variant="warning" size="sm" />

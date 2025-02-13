@@ -165,7 +165,7 @@ function Tables () {
     mutationFn: CreateExpensis,
     onSuccess: (data) => {
       console.log("🚀 ~ file: index.js:127 ~ data:", data)
-      window.location.href = '/expensis'
+      window.location.href = '/expenses'
       setclosemodal(true)
       
     },
@@ -228,7 +228,7 @@ const {getAllUser} = useQuery({
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox pt={6} pb={3}>
-        <Add isLarge={true} btntext="Add Expensis" Close={closemodal} >
+        <Add isLarge={true} btntext="Add Expenses" Close={closemodal} >
        
           <p style={{color:"red"}}>{errrmsg}</p>
            <TextField fullWidth label="type" name="name" sx={{py:1}} color="primary" onChange={handleOnChange} />
@@ -355,7 +355,7 @@ const {getAllUser} = useQuery({
                 coloredShadow="info"
               >
                 <MDTypography variant="h6" color="white">
-                  Expensis Table
+                  Expenses Table
                 </MDTypography>
               </MDBox>
               <MDBox pt={3}>

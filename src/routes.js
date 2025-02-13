@@ -155,10 +155,10 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "expensis",
+    name: "expenses",
     key: "expensis",
     icon: <CalendarMonthIcon/>,
-    route: "/expensis",
+    route: "/expenses",
     component: <Expensis />,
   },
   {
