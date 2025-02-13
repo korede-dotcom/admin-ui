@@ -167,7 +167,7 @@ const routes = [
     name: "expensis",
     key: "expensis",
     icon: <CalendarMonthIcon/>,
-    route: "/expensis",
+    route: "/expenses",
     component: <Expensis />,
   },
   {
