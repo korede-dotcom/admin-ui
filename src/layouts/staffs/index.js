@@ -16,7 +16,7 @@ Coded by www.creative-tim.com
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -92,6 +92,10 @@ function Tables() {
   const booleanState = useBooleanStore((state) => state.booleanState);
   const staffDetails = JSON.parse(localStorage.getItem("staffId"))
 
+  useEffect(() => {
+    localStorage.removeItem("staffId")
+  },[])
+
   const [select, setselect] = useState({
     name:"",
     address:"",
@@ -149,20 +153,22 @@ function Tables() {
   };
   const handleStaffEditChange = (event) => {
     const { value, name } = event.target
-    console.log("🚀 ~ handleStaffEditChange ~ value, name:", value, name)
-    // setStaffBranch(value);
+    setStaffBranch(value);
     setselect2(prev => {
       return {
         ...prev,
+       
         [name]:value
       }
     })
+      console.log("🚀 ~ handleStaffEditChange ~ value, name:", value, name)
+  console.log("🚀 ~ file: index.js:70 ~ select:", select2)
+
 
   };
 
   console.log(staffbranch)
  
-  console.log("🚀 ~ file: index.js:70 ~ select:", select2)
 
   const handleOnChange = (e) => {
     const { value, name } = e.target
@@ -176,9 +182,11 @@ function Tables() {
  const CreateAnyUserBtn = (event) => {
   mutate(select)
 };
+  console.log("🚀 ~ CreateAnyUserBtn ~ select:", select)
 //  const UpadaterAnyUserBtn = (event) => {
 //   updatedUser({body:{...select2},id:staffDetails?.user?._id})
 // };
+
 
 const UpadaterAnyUserBtn = () => {
   updatedUser({ body: { ...select2 }, id: staffDetails?.user?._id });
@@ -342,7 +350,7 @@ const {getAllUser} = useQuery({
                 placeholder="Staff type"
                 name="role_id"
               >
-                {[2,3,4].includes(role_id) ? 
+                {[3,4].includes(role_id) ? 
                    <MenuItem value={6}>Other staffs</MenuItem>
                    :
                    (role_id === 5) ? 
