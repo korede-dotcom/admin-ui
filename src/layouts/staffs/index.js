@@ -90,10 +90,10 @@ function Tables() {
   console.log("🚀 ~ file: index.js:74 ~ getusers:", getusers)
 
   const booleanState = useBooleanStore((state) => state.booleanState);
-  const staffDetails = JSON.parse(localStorage.getItem("staffId"))
+  const staffDetails = JSON.parse(localStorage.getItem("staffdetails"))
 
   useEffect(() => {
-    localStorage.removeItem("staffId")
+    localStorage.removeItem("staffdetails")
   },[])
 
   const [select, setselect] = useState({
@@ -189,6 +189,7 @@ function Tables() {
 
 
 const UpadaterAnyUserBtn = () => {
+  localStorage.removeItem("staffdetails")
   updatedUser({ body: { ...select2 }, id: staffDetails?.user?._id });
 };
 
@@ -251,7 +252,10 @@ const {getAllUser} = useQuery({
  
 });
 
-
+const handleClose = () => {
+  localStorage.removeItem("staffdetails")
+  useBooleanStore.setState({ booleanState: !booleanState })
+}
 
   return (
     <DashboardLayout>
@@ -331,7 +335,7 @@ const {getAllUser} = useQuery({
 
         {
               booleanState  && (
-                <EditModal open={booleanState}  handleClose={ () => {useBooleanStore.setState({ booleanState: !booleanState })}}>
+                <EditModal open={booleanState}  handleClose={handleClose}>
                   <>
                   <p style={{color:"red"}}>{errrmsg}</p>
            <TextField fullWidth defaultValue={staffDetails?.user?.name}  label="Name" name="name" sx={{py:1}} color="primary" onChange={handleStaffEditChange} />

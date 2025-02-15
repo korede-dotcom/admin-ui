@@ -20,7 +20,7 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 import MDBadge from "components/MDBadge";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 
 // Images
 import team2 from "assets/images/team-2.jpg";
@@ -47,7 +47,7 @@ const toggleState = () => {
 };
 
 const caset = (id) => {
-  localStorage.setItem("staffId",JSON.stringify(id))
+  localStorage.setItem("staffdetails",JSON.stringify(id))
   toggleState()
 
   console.log("🚀 ~ isOpen:", booleanState)
