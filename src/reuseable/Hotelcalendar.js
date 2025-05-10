@@ -330,7 +330,19 @@ return (
   </form>
       <DialogActions>
       <Button onClick={handleModalClose}>Cancel</Button>
-      <Button type="submit" onClick={handleNewEventSubmit}>Book Now</Button>
+      <Button 
+        type="submit" 
+        onClick={handleNewEventSubmit}
+        sx={{
+          backgroundColor: '#66BB6A',
+          color: '#fff',
+          '&:hover': {
+            backgroundColor: '#43A047',
+          },
+        }}
+      >
+        Book Now
+      </Button>
   </DialogActions>
   </DialogContent>
 

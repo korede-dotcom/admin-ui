@@ -234,11 +234,26 @@ export const getAllUsers = async () => {
   );
   return data;
 };
-export const getDashboard = async () => {
+export const getDashboard = async (businessYear, startDate, endDate) => {
+  let url = `${baseurl}eventmanager/dashboard`;
+  const params = new URLSearchParams();
+  
+  if (businessYear) {
+    params.append('businessYear', businessYear);
+  }
+  if (startDate) {
+    params.append('startDate', startDate);
+  }
+  if (endDate) {
+    params.append('endDate', endDate);
+  }
 
-  const { data } = await Axios.get(
-    `${baseurl}eventmanager/dashboard`,
-  );
+  const queryString = params.toString();
+  if (queryString) {
+    url += `?${queryString}`;
+  }
+
+  const { data } = await Axios.get(url);
   return data;
 };
 export const getAllTodos = async () => {

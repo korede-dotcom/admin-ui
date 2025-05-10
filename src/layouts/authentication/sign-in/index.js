@@ -40,6 +40,7 @@ import BasicLayout from "layouts/authentication/components/BasicLayout";
 
 // Images
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
+import Logo from "assets/images/logo.png";
 
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { userLogin } from "services/Auth";
@@ -156,7 +157,9 @@ const { mutate, isLoading, isError,error,data } = useMutation({
            {err.length ? err :" Sign in" }
           </MDTypography>
           <Grid container spacing={3} justifyContent="center" sx={{ mt: 1, mb: 2 }}>
-            <Grid item xs={2}>
+        <img src={Logo} width={100} height={90} />
+
+            {/* <Grid item xs={2}>
               <MDTypography component={MuiLink} href="#" variant="body1" color="white">
                 <FacebookIcon color="inherit" />
               </MDTypography>
@@ -170,7 +173,7 @@ const { mutate, isLoading, isError,error,data } = useMutation({
               <MDTypography component={MuiLink} href="#" variant="body1" color="white">
                 <GoogleIcon color="inherit" />
               </MDTypography>
-            </Grid>
+            </Grid> */}
           </Grid>
         </MDBox>
         <MDBox pt={4} pb={3} px={3}>
