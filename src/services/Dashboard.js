@@ -234,6 +234,12 @@ export const getAllUsers = async () => {
   );
   return data;
 };
+
+export const getPastYearRecord = async (start,end) => {
+  const { data } = await Axios.get(`${baseurl}eventmanager/past-year-record?start=${start}&end=${end}`);
+  return data;
+};
+
 export const getDashboard = async (businessYear, startDate, endDate) => {
   let url = `${baseurl}eventmanager/dashboard`;
   const params = new URLSearchParams();
@@ -256,6 +262,7 @@ export const getDashboard = async (businessYear, startDate, endDate) => {
   const { data } = await Axios.get(url);
   return data;
 };
+
 export const getAllTodos = async () => {
 
   const { data } = await Axios.get(
@@ -284,4 +291,3 @@ export const forgotPassword = async (body) => {
   );
   return data;
 };
-

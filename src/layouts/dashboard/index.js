@@ -13,9 +13,10 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import React, { useState } from "react";
-import { useSearchParams } from 'react-router-dom';
-import { TextField, Box, Button, CircularProgress } from '@mui/material';
+import React, { useState, useEffect, useCallback } from "react";
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Link, useSearchParams } from 'react-router-dom';
+import { TextField, Box, Button, CircularProgress, Backdrop } from '@mui/material';
 import Grid from "@mui/material/Grid";
 import MDBox from "components/MDBox";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -31,10 +32,11 @@ import ApartmentIcon from '@mui/icons-material/Apartment';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import reportsLineChartData from "layouts/dashboard/data/reportsLineChartData";
-import { getDashboard } from "services/Dashboard";
+import { getDashboard, getPastYearRecord } from "services/Dashboard";
 import { useQuery } from '@tanstack/react-query';
 import Projects from "layouts/dashboard/components/Projects";
 import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
+import debounce from 'lodash/debounce';
 
 function Dashboard() {
   const [searchParams] = useSearchParams();
@@ -50,11 +52,66 @@ function Dashboard() {
     queryKey: ['getDashboard', businessYear, startDate, endDate],
     queryFn: () => getDashboard(businessYear, startDate, endDate),
     onSuccess: (d) => {
-      console.log("🚀 ~ d:", d);
       setEventGraph(d?.data?.sales);
       setTb(d?.data?.sales);
     }
   });
+ 
+
+const [pastYearRecords, setPastYearRecords] = useState([]);
+const [yearRanges, setYearRanges] = useState([]);
+const [selectedYearRange, setSelectedYearRange] = useState("");
+const [isPastYearLoading, setIsPastYearLoading] = useState(false);
+
+  useEffect(() => {
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
+    const yearRanges = years.map((year) => `${year}-${year + 1}`);
+    setYearRanges(yearRanges);
+    setSelectedYearRange(yearRanges[0]);
+  }, []);
+
+const { data: pastYearData, refetch: refetchPastYear } = useQuery({
+  queryKey: ['getPastYearRecord', selectedYearRange],
+  queryFn: () => getPastYearRecord(selectedYearRange.split('-')[0], selectedYearRange.split('-')[1]),
+  enabled: false,
+  onSuccess: (data) => {
+    setPastYearRecords(data?.data?.data?.sales?.datasets?.data || []);
+   
+      setEventGraph(data?.data?.sales);
+      setTb(data?.data?.sales);
+    
+  }
+});
+
+const handleFetchPastYearRecords = async () => {
+  setIsPastYearLoading(true);
+  await refetchPastYear();
+  setIsPastYearLoading(false);
+};
+
+  // Debounced refetch function
+  const debouncedRefetch = useCallback(
+    debounce(() => {
+      refetch();
+    }, 500),
+    []
+  );
+
+  // Update the date change handlers
+  const handleStartDateChange = (e) => {
+    setStartDate(e.target.value);
+    if (e.target.value && endDate) {
+      debouncedRefetch();
+    }
+  };
+
+  const handleEndDateChange = (e) => {
+    setEndDate(e.target.value);
+    if (startDate && e.target.value) {
+      debouncedRefetch();
+    }
+  };
 
   const handleFilter = () => {
     refetch();
@@ -62,16 +119,38 @@ function Dashboard() {
 
   const { sales, tasks } = reportsLineChartData;
 
-  return (
-    <DashboardLayout>
-      <DashboardNavbar />
-      <MDBox py={3}>
+return (
+  <DashboardLayout>
+    <DashboardNavbar />
+    <MDBox py={3}>
+<ToggleButtonGroup
+  value={selectedYearRange}
+  exclusive
+  onChange={(event, value) => setSelectedYearRange(value)}
+  sx={{ mb: 2 }}
+>
+  {yearRanges.map((yearRange) => (
+    <ToggleButton key={yearRange} value={yearRange}>
+      {yearRange}
+    </ToggleButton>
+  ))}
+</ToggleButtonGroup>
+<Button variant="contained" onClick={handleFetchPastYearRecords}>
+  {isPastYearLoading ? (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <CircularProgress size={20} color="inherit" />
+      <span>Loading...</span>
+    </Box>
+  ) : (
+    `Fetch Records for ${selectedYearRange}`
+  )}
+</Button>
         <Box sx={{ mb: 3, display: 'flex', gap: 2, alignItems: 'center' }}>
           <TextField
             label="Start Date"
             type="date"
             value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
+            onChange={handleStartDateChange}
             InputLabelProps={{
               shrink: true,
             }}
@@ -81,7 +160,7 @@ function Dashboard() {
             label="End Date"
             type="date"
             value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
+            onChange={handleEndDateChange}
             InputLabelProps={{
               shrink: true,
             }}
@@ -90,18 +169,80 @@ function Dashboard() {
           <Button 
             variant="contained" 
             onClick={handleFilter}
-            sx={{ height: '56px', minWidth: '100px' }}
+            sx={{ 
+              height: '56px', 
+              minWidth: '100px',
+              position: 'relative',
+              '&:disabled': {
+                backgroundColor: 'primary.main',
+                opacity: 0.7
+              }
+            }}
             disabled={isLoading}
           >
-            {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Filter'}
+            {isLoading ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CircularProgress size={20} color="inherit" />
+                <span>Loading...</span>
+              </Box>
+            ) : (
+              'Filter'
+            )}
           </Button>
         </Box>
-        {isLoading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
-            <CircularProgress />
+
+        <Backdrop
+          sx={{
+            color: '#fff',
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}
+          open={isLoading}
+        >
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            gap: 2 
+          }}>
+            <CircularProgress color="inherit" />
+            <Box sx={{ 
+              color: 'white', 
+              fontSize: '1.2rem',
+              fontWeight: 'medium'
+            }}>
+              Loading Dashboard Data...
+            </Box>
           </Box>
-        ) : (
+        </Backdrop>
+
+        {!isLoading && (
           <>
+           {/* <Button variant="contained" onClick={handleFetchPastYearRecords}>
+              Fetch Past Year Records
+            </Button>*/}
+            {pastYearRecords.length > 0 && (
+              <Grid container spacing={3}>
+                {pastYearRecords.map((record, index) => (
+                  <Grid item xs={12} md={6} lg={4} key={index}>
+                    <MDBox mb={1.5}>
+                      <ComplexStatisticsCard
+                        color="info"
+                        icon={<EventAvailableIcon />}
+                        title={`Total Events ${record.year}`}
+                        count={record.data.reduce((acc, curr) => acc + curr, 0)}
+                        percentage={{
+                          color: "success",
+                          amount: "",
+                          label: "count",
+                        }}
+                      />
+                    </MDBox>
+                  </Grid>
+                ))}
+              </Grid>
+            )}
+
             {role === 1 && (
             <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={3}>

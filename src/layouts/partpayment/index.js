@@ -185,7 +185,10 @@ const [updatedFields, setUpdatedFields] = useState({});
   mutate(getEvent)
 };
  const PartUpadater = (event) => {
-  updatedPart({_id:staffDetails?._id,...updatedFields})
+  updatedPart({_id:staffDetails?._id,...updatedFields, fullPayment: false})
+};
+ const PartUpadaterFull = (event) => {
+  updatedPart({_id:staffDetails?._id,...updatedFields, fullPayment: true})
 };
 
   const { mutate, isLoading,isError} = useMutation({
@@ -431,10 +434,18 @@ const handleUpdate = (e) => {
         <Button
                 variant="contained"
                 fullWidth
+                onClick={PartUpadaterFull}
+                sx={{ mt: 2, px: 2, color: '#fff' }}
+                >
+            save as partpayment
+            </Button>
+        <Button
+                variant="contained"
+                fullWidth
                 onClick={PartUpadater}
                 sx={{ mt: 2, px: 2, color: '#fff' }}
                 >
-            Submit
+            Submit as full payment
             </Button>
     
                   </>
