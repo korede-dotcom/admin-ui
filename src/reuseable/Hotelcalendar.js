@@ -16,8 +16,11 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import SearchAndSelect from "./SelectSearch";
 import {AvailableRooms,bookings,BookRooms} from "../services/Dashboard"
-import { useMutation } from "@tanstack/react-query"; 
+import { useMutation } from "@tanstack/react-query";
 import { useQuery } from '@tanstack/react-query';
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import companyLogo from "assets/images/logo-ct.png";
 
 
 const BookingCalendar = () => {
@@ -105,6 +108,141 @@ const [getHotelBooking, setHotelBooking] = useState({
     const handleBookingClick = (info) => {
         setBookingDetails(info.event.extendedProps.booking);
         setModalOpen(true);
+    };
+
+    const downloadHotelReceipt = (bookingData) => {
+        const pdf = new jsPDF();
+
+        // Set background color to light green
+        pdf.setFillColor(240, 255, 240); // Very light green background
+        pdf.rect(0, 0, 210, 297, 'F'); // Fill entire page
+
+        // Add green header background
+        pdf.setFillColor(102, 187, 106); // Green color #66BB6A
+        pdf.rect(0, 0, 210, 40, 'F');
+
+        // Try to add company logo (using favicon as fallback)
+        try {
+            const logoImg = new Image();
+            logoImg.crossOrigin = "anonymous";
+            logoImg.onload = function() {
+                try {
+                    pdf.addImage(logoImg, 'PNG', 15, 8, 25, 25);
+                } catch (e) {
+                    console.log("Logo loading failed, continuing without logo");
+                }
+                generateHotelPDFContent();
+            };
+            logoImg.onerror = function() {
+                console.log("Logo failed to load, continuing without logo");
+                generateHotelPDFContent();
+            };
+            logoImg.src = '/favicon.png'; // Use favicon as it's working
+        } catch (e) {
+            console.log("Logo loading error, continuing without logo");
+            generateHotelPDFContent();
+        }
+
+        function generateHotelPDFContent() {
+            // Add company header with white text on green background
+            pdf.setTextColor(255, 255, 255); // White text
+            pdf.setFontSize(24);
+            pdf.setFont("helvetica", "bold");
+            pdf.text("SAMEBROTHER", 50, 20);
+            pdf.setFontSize(14);
+            pdf.setFont("helvetica", "normal");
+            pdf.text("Hotel Booking Receipt", 50, 30);
+
+            // Reset text color to black for rest of content
+            pdf.setTextColor(0, 0, 0);
+
+            // Add a decorative line separator
+            pdf.setDrawColor(102, 187, 106); // Green line
+            pdf.setLineWidth(2);
+            pdf.line(15, 45, 195, 45);
+
+            // Receipt details with green styling
+            pdf.setFontSize(18);
+            pdf.setFont("helvetica", "bold");
+            pdf.setTextColor(102, 187, 106); // Green text for title
+            pdf.text("RECEIPT", 15, 60);
+
+            pdf.setFontSize(12);
+            pdf.setFont("helvetica", "normal");
+            pdf.setTextColor(0, 0, 0); // Black text for content
+
+            // Guest details section with green background
+            let yPosition = 75;
+            pdf.setFillColor(232, 245, 233); // Light green background for sections
+            pdf.rect(10, yPosition - 5, 190, 45, 'F');
+
+            pdf.setFont("helvetica", "bold");
+            pdf.setTextColor(102, 187, 106);
+            pdf.text("Guest Information:", 15, yPosition);
+            pdf.setFont("helvetica", "normal");
+            pdf.setTextColor(0, 0, 0);
+            yPosition += 10;
+            pdf.text(`Name: ${bookingData.guestName}`, 20, yPosition);
+            yPosition += 8;
+            pdf.text(`Email: ${bookingData.guestEmail}`, 20, yPosition);
+            yPosition += 8;
+            pdf.text(`Phone: ${bookingData.guestPhone}`, 20, yPosition);
+            yPosition += 8;
+            pdf.text(`Number of Guests: ${bookingData.guestsCount}`, 20, yPosition);
+            yPosition += 20;
+
+            // Booking details section with green background
+            pdf.setFillColor(232, 245, 233);
+            pdf.rect(10, yPosition - 5, 190, 50, 'F');
+
+            pdf.setFont("helvetica", "bold");
+            pdf.setTextColor(102, 187, 106);
+            pdf.text("Booking Details:", 15, yPosition);
+            pdf.setFont("helvetica", "normal");
+            pdf.setTextColor(0, 0, 0);
+            yPosition += 10;
+            pdf.text(`Room Number: ${bookingData.roomnumber}`, 20, yPosition);
+            yPosition += 8;
+            pdf.text(`Room Type: ${bookingData.roomtype}`, 20, yPosition);
+            yPosition += 8;
+            pdf.text(`Branch: ${bookingData.branch}`, 20, yPosition);
+            yPosition += 8;
+            pdf.text(`Reference ID: ${bookingData.ref}`, 20, yPosition);
+            yPosition += 20;
+
+            // Payment details section with green background
+            pdf.setFillColor(232, 245, 233);
+            pdf.rect(10, yPosition - 5, 190, 25, 'F');
+
+            pdf.setFont("helvetica", "bold");
+            pdf.setTextColor(102, 187, 106);
+            pdf.text("Payment Details:", 15, yPosition);
+            pdf.setFont("helvetica", "normal");
+            pdf.setTextColor(0, 0, 0);
+            yPosition += 10;
+            pdf.text(`Payment Mode: ${bookingData.paymentmode}`, 20, yPosition);
+            yPosition += 20;
+
+            // Footer with green styling
+            yPosition += 20;
+            pdf.setDrawColor(102, 187, 106);
+            pdf.setLineWidth(2);
+            pdf.line(15, yPosition, 195, yPosition);
+            yPosition += 15;
+
+            pdf.setFontSize(12);
+            pdf.setFont("helvetica", "bold");
+            pdf.setTextColor(102, 187, 106);
+            pdf.text("Thank you for choosing Samebrother Hotel!", 15, yPosition);
+
+            pdf.setFontSize(10);
+            pdf.setFont("helvetica", "normal");
+            pdf.setTextColor(0, 0, 0);
+            pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 15, yPosition + 10);
+
+            // Save the PDF
+            pdf.save(`hotel-receipt-${bookingData.ref || 'booking'}.pdf`);
+        }
     };
 
     const handleModalClose = () => {
@@ -389,6 +527,18 @@ return (
                 </DialogContent>
                 <DialogActions>
                 <Button onClick={handleModalClose}>Close</Button>
+                <Button
+                    onClick={() => downloadHotelReceipt(bookingDetails)}
+                    sx={{
+                        backgroundColor: '#66BB6A',
+                        color: '#fff',
+                        '&:hover': {
+                            backgroundColor: '#43A047',
+                        },
+                    }}
+                >
+                    Download Receipt
+                </Button>
                 </DialogActions>
             </div>
              )} 

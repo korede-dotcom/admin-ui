@@ -185,10 +185,10 @@ const [updatedFields, setUpdatedFields] = useState({});
   mutate(getEvent)
 };
  const PartUpadater = (event) => {
-  updatedPart({_id:staffDetails?._id,...updatedFields, fullPayment: false})
+  updatedPart({_id:staffDetails?._id,...updatedFields, part_payments: false})
 };
  const PartUpadaterFull = (event) => {
-  updatedPart({_id:staffDetails?._id,...updatedFields, fullPayment: true})
+  updatedPart({_id:staffDetails?._id,...updatedFields, part_payments: true})
 };
 
   const { mutate, isLoading,isError} = useMutation({

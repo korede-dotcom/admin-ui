@@ -12,6 +12,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useQuery } from '@tanstack/react-query';
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import companyLogo from "assets/images/logo-ct.png";
 
 // Add custom styles for FullCalendar events
 const calendarStyles = `
@@ -123,8 +124,171 @@ const EventCalendar = () => {
   };
 
   const handleEventClick = (info) => {
-    setEventDetails(info.event.extendedProps.booking);
+    setEventDetails({
+      ...info.event.extendedProps.booking,
+      event_type: info.event.title
+    });
     setModalOpen(true);
+  };
+
+  const downloadReceipt = (eventData) => {
+    const pdf = new jsPDF();
+
+    // Set background color to light green
+    pdf.setFillColor(240, 255, 240); // Very light green background
+    pdf.rect(0, 0, 210, 297, 'F'); // Fill entire page
+
+    // Add green header background
+    pdf.setFillColor(102, 187, 106); // Green color #66BB6A
+    pdf.rect(0, 0, 210, 40, 'F');
+
+    // Try to add company logo (using favicon as fallback)
+    try {
+      const logoImg = new Image();
+      logoImg.crossOrigin = "anonymous";
+      logoImg.onload = function() {
+        try {
+          pdf.addImage(logoImg, 'PNG', 15, 8, 25, 25);
+        } catch (e) {
+          console.log("Logo loading failed, continuing without logo");
+        }
+        generatePDFContent();
+      };
+      logoImg.onerror = function() {
+        console.log("Logo failed to load, continuing without logo");
+        generatePDFContent();
+      };
+      logoImg.src = '/favicon.png'; // Use favicon as it's working
+    } catch (e) {
+      console.log("Logo loading error, continuing without logo");
+      generatePDFContent();
+    }
+
+    function generatePDFContent() {
+      // Add company header with white text on green background
+      pdf.setTextColor(255, 255, 255); // White text
+      pdf.setFontSize(24);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("SAMEBROTHER", 50, 20);
+      pdf.setFontSize(14);
+      pdf.setFont("helvetica", "normal");
+      pdf.text("Event Booking Receipt", 50, 30);
+
+      // Reset text color to black for rest of content
+      pdf.setTextColor(0, 0, 0);
+
+      // Add a decorative line separator
+      pdf.setDrawColor(102, 187, 106); // Green line
+      pdf.setLineWidth(2);
+      pdf.line(15, 45, 195, 45);
+
+      // Receipt details with green styling
+      pdf.setFontSize(18);
+      pdf.setFont("helvetica", "bold");
+      pdf.setTextColor(102, 187, 106); // Green text for title
+      pdf.text("RECEIPT", 15, 60);
+
+      pdf.setFontSize(12);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(0, 0, 0); // Black text for content
+
+      // Customer details section with green background
+      let yPosition = 75;
+      pdf.setFillColor(232, 245, 233); // Light green background for sections
+      pdf.rect(10, yPosition - 5, 190, 45, 'F');
+
+      pdf.setFont("helvetica", "bold");
+      pdf.setTextColor(102, 187, 106);
+      pdf.text("Customer Information:", 15, yPosition);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(0, 0, 0);
+      yPosition += 10;
+      pdf.text(`Name: ${eventData.name}`, 20, yPosition);
+      yPosition += 8;
+      pdf.text(`Email: ${eventData.email}`, 20, yPosition);
+      yPosition += 8;
+      pdf.text(`Phone: ${eventData.phone}`, 20, yPosition);
+      yPosition += 8;
+      pdf.text(`Address: ${eventData.address}`, 20, yPosition);
+      yPosition += 20;
+
+      // Event details section with green background
+      pdf.setFillColor(232, 245, 233);
+      pdf.rect(10, yPosition - 5, 190, 50, 'F');
+
+      pdf.setFont("helvetica", "bold");
+      pdf.setTextColor(102, 187, 106);
+      pdf.text("Event Details:", 15, yPosition);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(0, 0, 0);
+      yPosition += 10;
+      pdf.text(`Event Type: ${eventData.event_type || eventData.title || 'N/A'}`, 20, yPosition);
+      yPosition += 8;
+      pdf.text(`Date: ${eventData.date}`, 20, yPosition);
+      yPosition += 8;
+      pdf.text(`Branch: ${eventData.branch}`, 20, yPosition);
+      yPosition += 8;
+      pdf.text(`Reference ID: ${eventData.reference_id}`, 20, yPosition);
+      yPosition += 20;
+
+      // Payment details section with green background
+      pdf.setFillColor(232, 245, 233);
+      pdf.rect(10, yPosition - 5, 190, 35, 'F');
+
+      pdf.setFont("helvetica", "bold");
+      pdf.setTextColor(102, 187, 106);
+      pdf.text("Payment Details:", 15, yPosition);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(0, 0, 0);
+      yPosition += 10;
+      pdf.text(`Amount: ₦${eventData.amount || '0'}`, 20, yPosition);
+      yPosition += 8;
+      pdf.text(`Payment Mode: ${eventData.mode}`, 20, yPosition);
+      yPosition += 20;
+
+      // Additional details if available
+      if (eventData.superstar || eventData.plus) {
+        pdf.setFillColor(232, 245, 233);
+        pdf.rect(10, yPosition - 5, 190, 25, 'F');
+
+        pdf.setFont("helvetica", "bold");
+        pdf.setTextColor(102, 187, 106);
+        pdf.text("Additional Services:", 15, yPosition);
+        pdf.setFont("helvetica", "normal");
+        pdf.setTextColor(0, 0, 0);
+        yPosition += 10;
+
+        if (eventData.superstar) {
+          pdf.text(`Superstar: ${eventData.superstar}`, 20, yPosition);
+          yPosition += 8;
+        }
+        if (eventData.plus) {
+          pdf.text(`Plus: ${eventData.plus}`, 20, yPosition);
+          yPosition += 8;
+        }
+        yPosition += 10;
+      }
+
+      // Footer with green styling
+      yPosition += 20;
+      pdf.setDrawColor(102, 187, 106);
+      pdf.setLineWidth(2);
+      pdf.line(15, yPosition, 195, yPosition);
+      yPosition += 15;
+
+      pdf.setFontSize(12);
+      pdf.setFont("helvetica", "bold");
+      pdf.setTextColor(102, 187, 106);
+      pdf.text("Thank you for choosing Samebrother!", 15, yPosition);
+
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(0, 0, 0);
+      pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 15, yPosition + 10);
+
+      // Save the PDF
+      pdf.save(`receipt-${eventData.reference_id || 'event'}.pdf`);
+    }
   };
 
   const handleModalClose = () => {
@@ -408,8 +572,8 @@ const EventCalendar = () => {
               return {
                 title: d?.event_type,
                 start: d?.date,
-                backgroundColor: d?.part_payments ? "#000" : "",
-                textColor: d?.part_payments ? "white" : "",
+                backgroundColor: d?.part_payments ? "#000" : "#66BB6A", // Black for part payments, Green for full payments
+                textColor: d?.part_payments ? "white" : "white", // White text for both
                 extendedProps: {
                   booking: {
                     name: `${d?.first_name} ${d?.last_name}`,
@@ -583,6 +747,9 @@ const EventCalendar = () => {
                 Name: {eventDetails.name}
               </DialogContentText>
               <DialogContentText>
+                Event Type: {eventDetails.event_type}
+              </DialogContentText>
+              <DialogContentText>
                 Phone: {eventDetails.phone}
               </DialogContentText>
               <DialogContentText>
@@ -615,6 +782,18 @@ const EventCalendar = () => {
             </DialogContent>
             <DialogActions>
               <Button onClick={handleModalClose}>Close</Button>
+              <Button
+                onClick={() => downloadReceipt(eventDetails)}
+                sx={{
+                  backgroundColor: '#66BB6A',
+                  color: '#fff',
+                  '&:hover': {
+                    backgroundColor: '#43A047',
+                  },
+                }}
+              >
+                Download Receipt
+              </Button>
             </DialogActions>
           </div>
         )}
